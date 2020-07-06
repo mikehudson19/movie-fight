@@ -45,6 +45,7 @@ const onInput = async (e) => {
     // Create a dropdown item for each element in the 'movies' array
     const option = document.createElement('a');
     option.classList.add('dropdown-item');
+    // Check to see if the image source is valid - set it to an empty string if not
     const imgSRC = obj.Poster === 'N/A' ? '' : obj.Poster; 
     option.innerHTML = `
       <img src="${imgSRC}"/>
@@ -54,9 +55,24 @@ const onInput = async (e) => {
    resultsWrapper.appendChild(option);
   }
 
-  
-
+ 
 }
 
 input.addEventListener('input', debounce(onInput, 1000))
 
+// Function to clear the dropdown when clicked away from
+// document.addEventListener('click', (e) => {
+//   console.log(e.target);
+ 
+//   if (e.target.className !== 'dropdown-item') {
+//     resultsWrapper.innerHTML = '';
+//   }
+  
+// })
+
+// Steven's solution to clear the dropdown when clicked away from
+document.addEventListener('click', (e) => {
+  if (!root.contains(e.target)) {
+    dropdown.classList.remove('is-active')
+  }
+})
