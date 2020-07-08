@@ -1,5 +1,4 @@
-const config = {
-  root: document.querySelector('.autocomplete'),
+const autocompleteConfig = {
   renderOption(movie) {
     // Check to see if the image source is valid - set it to an empty string if not
     const imgSRC = movie.Poster === 'N/A' ? '' : movie.Poster; 
@@ -7,9 +6,6 @@ const config = {
       <img src="${imgSRC}"/>
       ${movie.Title} (${movie.Year})
     `
-  },
-  onOptionSelect(movie) {
-    getMoreData(movie);
   },
   inputValue(movie) {
     return movie.Title;
@@ -30,17 +26,34 @@ const config = {
   }
 }
 
-createAutoComplete(config)
+createAutoComplete({
+  ...autocompleteConfig,
+  root: document.querySelector('#left-autocomplete'),
+  onOptionSelect(movie) {
+    const tutorial = document.querySelector('.tutorial');
+    tutorial.classList.add('is-hidden')
+    getMoreData(movie, document.querySelector('#left-summary'));
+  },
+})
 
+createAutoComplete({
+  ...autocompleteConfig,
+  root: document.querySelector('#right-autocomplete'),
+  onOptionSelect(movie) {
+    const tutorial = document.querySelector('.tutorial');
+    tutorial.classList.add('is-hidden')
+    getMoreData(movie, document.querySelector('#right-summary'));
+  },
+})
 
-const getMoreData = async (movie) => {
+const getMoreData = async (movie, summaryElement) => {
   const response = await axios.get('http://www.omdbapi.com/', {
     params: {
       apikey: '94dd967b',
       i: movie.imdbID
     }
   })
-  document.querySelector('.movie-info').innerHTML = updateUI(response.data);
+  summaryElement.innerHTML = updateUI(response.data);
 }
 
 function updateUI (movieDetail) {
