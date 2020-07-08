@@ -1,8 +1,8 @@
-const createAutoComplete = ({ root }) => {
+const createAutoComplete = ({ root, renderOption, onOptionSelect, inputValue, fetchData }) => {
   // Creating the structure of the dropdown list
 
 root.innerHTML = `
-  <label><b>Search For a Movie</b></label>
+  <label><b>Search</b></label>
   <input class="input"/>
   <div class="dropdown">
     <div class="dropdown-menu">
@@ -18,8 +18,8 @@ const resultsWrapper = root.querySelector('.results');
 
 
 const onInput = async (e) => {
-  const movies = await fetchData(e.target.value);
-  if (movies.length == 0) {
+  const items = await fetchData(e.target.value);
+  if (items.length == 0) {
     dropdown.classList.remove('is-active');
     return;
   }
@@ -30,23 +30,21 @@ const onInput = async (e) => {
   // Add the 'is-active' class to display the dropdown menu
   dropdown.classList.add('is-active');
 
-  for (let movie of movies) {
-    // Create a dropdown item for each element in the 'movies' array
+  for (let item of items) {
+    // Create a dropdown item for each element in the 'items' array
     const option = document.createElement('a');
     option.classList.add('dropdown-item');
-    // Check to see if the image source is valid - set it to an empty string if not
-    const imgSRC = movie.Poster === 'N/A' ? '' : movie.Poster; 
-    option.innerHTML = `
-      <img src="${imgSRC}"/>
-      ${movie.Title} 
-    `
+    option.innerHTML = renderOption(item);
+
     option.addEventListener('click', () => {
-      input.value = movie.Title;
       dropdown.classList.remove('is-active');
-      getMoreData(movie);
+      input.value = inputValue(item);
+      onOptionSelect(item);
     })
     // Append each dropdown item to the UI
    resultsWrapper.appendChild(option);
+
+   
   }
 
 
